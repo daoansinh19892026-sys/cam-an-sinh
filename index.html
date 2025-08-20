@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera An Sinh</title>
+    <link rel="stylesheet" href="style.css">
+    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady()"></script>
+</head>
+<body>
+    <div id="login-container">
+        <h1>Camera An Sinh</h1>
+        <p>Làm 1 lần, An Sinh 1 đời</p>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="main-container" style="display: none;">
+        <h1>Camera An Sinh</h1>
+        <p>Làm 1 lần, An Sinh 1 đời</p>
+        <video id="videoInput" width="320" height="240" autoplay playsinline></video>
+        <canvas id="canvasOutput" width="320" height="240"></canvas>
+        <div id="counts">
+            <p>Total Grains: <span id="total-count">0</span></p>
+            <p>Lost Grains: <span id="lost-count">0</span></p>
+            <p>Divide by 4: <span id="divide-result">0</span></p>
+        </div>
+        <button onclick="captureTotal()">Capture Total</button>
+        <button onclick="captureCurrent()">Capture Current</button>
+        <button onclick="calculateDivide()">Calculate Divide</button>
+        <button onclick="toggleFullscreen()">Toggle Fullscreen</button>
+        <button onclick="logout()">Logout</button>
+        <img src="grain-logo.png" alt="Grain Logo" class="logo">
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
