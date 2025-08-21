@@ -1,125 +1,68 @@
-// File: script.js
-let video;
-let totalCount = 0;
-let currentCount = 0;
-let streaming = false;
+/ JS cho mô hình thấu kính và độ lệch
+function calculateLens() {
+    const hc = 3; // mm
+    const a = 11.5; // mm
+    const Rs = (a**2 + hc**2) / (2 * hc); // Bán kính cầu
+    const Vcap = Math.PI * hc**2 * (Rs - hc / 3); // Thể tích một nắp
+    const Vlens = 2 * Vcap; // Thể tích thấu kính
+    const dMax = 11.5; // Độ lệch tối đa d <= R
 
-function onOpenCvReady() {
-    console.log('OpenCV.js is ready.');
-    video = document.getElementById('videoInput');
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    // Hiển thị kết quả (bao gồm nhiều vật thể nếu thêm)
+    document.getElementById('result').innerHTML = `
+        Thể tích thấu kính: ${Vlens.toFixed(2)} mm³ (≈ ${(Vlens / 1000).toFixed(3)} cm³)<br>
+        Độ lệch tâm tối đa: ${dMax} mm<br>
+        (Nguyên lý: d ≤ R cho hai mảnh tròn giống hệt).
+    `;
+}
+
+// Cập nhật vật thể mới (thêm nhiều vật thể)
+let objects = []; // Mảng lưu nhiều vật thể
+function addObject() {
+    const newHc = prompt("Nhập chiều cao mới cho vật thể (mm):") || 3;
+    const newA = prompt("Nhập bán kính đáy mới (mm):") || 11.5;
+    objects.push({ hc: newHc, a: newA });
+    let result = 'Vật thể mới: ';
+    objects.forEach(obj => {
+        const Rs = (obj.a**2 + obj.hc**2) / (2 * obj.hc);
+        const Vlens = 2 * Math.PI * obj.hc**2 * (Rs - obj.hc / 3);
+        result += `V_lens ≈ ${Vlens.toFixed(2)} mm³<br>`;
+    });
+    document.getElementById('result').innerHTML += result;
+}
+
+// JS cho camera mô phỏng (WebRTC cho web, overlay chú thích cho "Android camera")
+function startCamera() {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
             video.srcObject = stream;
-            video.play();
-            streaming = true;
-            processVideo();
         })
-        .catch(err => console.error('Error accessing camera:', err));
+        .catch(err => console.error('Lỗi camera:', err));
+
+    // Overlay chú thích (giả lập đếm hạt)
+    setInterval(() => {
+        context.drawImage(video, 0, 0, 320, 240);
+        const totalParticles = Math.floor(Math.random() * 100); // Giả lập
+        const lostParticles = Math.floor(Math.random() * 20);
+        const lostDiv4 = (lostParticles / 4).toFixed(2);
+
+        context.fillStyle = 'white';
+        context.font = '16px Arial';
+        context.fillText(`Tổng số hạt đã đếm: ${totalParticles}`, 10, 20);
+        context.fillText(`Tổng số hạt mất: ${lostParticles}`, 10, 40);
+        context.fillText(`Số hạt mất chia 4: ${lostDiv4}`, 10, 60);
+    }, 1000); // Cập nhật mỗi giây
 }
 
-function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    if (username === 'admin' && password === '0000') {
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('main-container').style.display = 'block';
-    } else {
-        alert('Invalid credentials');
-    }
-}
-
-function logout() {
-    document.getElementById('main-container').style.display = 'none';
-    document.getElementById('login-container').style.display = 'block';
-}
-
-function captureTotal() {
-    const count = detectCircles();
-    totalCount = count > 300 ? count : 0; // Assume >300 as valid
-    document.getElementById('total-count').textContent = totalCount;
-    calculateLost();
-}
-
-function captureCurrent() {
-    const count = detectCircles();
-    currentCount = count;
-    calculateLost();
-}
-
-function calculateLost() {
-    const lost = Math.max(0, totalCount - currentCount);
-    document.getElementById('lost-count').textContent = lost;
-}
-
-function calculateDivide() {
-    const result = totalCount / 4;
-    document.getElementById('divide-result').textContent = result.toFixed(2);
-}
-
-function toggleFullscreen() {
-    const video = document.getElementById('videoInput');
-    const canvas = document.getElementById('canvasOutput');
-    if (!document.fullscreenElement) {
-        video.classList.add('fullscreen');
-        canvas.classList.add('fullscreen');
-        document.body.requestFullscreen();
-    } else {
-        video.classList.remove('fullscreen');
-        canvas.classList.remove('fullscreen');
-        document.exitFullscreen();
-    }
-}
-
-function processVideo() {
-    if (!streaming) return;
-    setTimeout(processVideo, 100); // Adjust for FPS
-}
-
-function detectCircles() {
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    let src = cv.imread(canvas);
-    let gray = new cv.Mat();
-    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-    cv.medianBlur(gray, gray, 5);
-
-    let circles = new cv.Mat();
-    // Tuned for ~2.3cm diameter (~20-50px, adjust per device resolution)
-    cv.HoughCircles(gray, circles, cv.HOUGH_GRADIENT, 1, 20, 50, 30, 10, 30);
-
-    let count = circles.cols; // Basic count
-
-    // Improve for occluded/stacked grains using contour analysis
-    let contours = new cv.MatVector();
-    let hierarchy = new cv.Mat();
-    cv.findContours(gray, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-    for (let i = 0; i < contours.size(); ++i) {
-        let area = cv.contourArea(contours.get(i));
-        if (area > 100 && area < 5000) { // Filter small/large noise
-            count += Math.floor(area / 314); // Approx area of one grain (pi*r^2, r~10px)
-        }
-    }
-
-    // Draw circles on output
-    let color = new cv.Scalar(255, 0, 0, 255);
-    for (let i = 0; i < circles.cols; ++i) {
-        let x = circles.data32F[i * 3];
-        let y = circles.data32F[i * 3 + 1];
-        let radius = circles.data32F[i * 3 + 2];
-        let center = new cv.Point(x, y);
-        cv.circle(src, center, radius, color, 3);
-    }
-    cv.imshow('canvasOutput', src);
-
-    src.delete();
-    gray.delete();
-    circles.delete();
-    contours.delete();
-    hierarchy.delete();
-
-    return count;
-}
+// Xử lý form (demo, không gửi thật)
+document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    alert('Đăng nhập thành công!');
+});
+document.getElementById('registerForm').addEventListener('submit', e => {
+    e.preventDefault();
+    alert('Đăng ký thành công! Liên hệ 0584226789 hoặc Zalo.');
+});

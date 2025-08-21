@@ -1,0 +1,59 @@
+body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    position: relative;
+}
+
+.top-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+}
+
+.top-left img {
+    margin-right: 10px;
+}
+
+h1, h2 {
+    color: #00ffcc; /* Màu xanh nhạt phù hợp với nền đen */
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input, button {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    background: #333;
+    color: white;
+    border: 1px solid #00ffcc;
+}
+
+a {
+    color: #00ffcc;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background: black;
+    padding: 10px;
+}
+
+#video, #canvas {
+    border: 1px solid white;
+}

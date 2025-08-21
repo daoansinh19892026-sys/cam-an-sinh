@@ -1,38 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera An Sinh</title>
-    <link rel="stylesheet" href="style.css">
-    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady()"></script>
+    <title>Chào mừng bạn - App & Website về Camera</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="https://i.imgur.com/example-icon-eye.png"> <!-- Thay bằng link icon mắt của bạn (tôi dùng placeholder từ hình bạn đính) -->
 </head>
 <body>
-    <div id="login-container">
-        <h1>Camera An Sinh</h1>
-        <p>Làm 1 lần, An Sinh 1 đời</p>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Login</button>
-    </div>
-
-    <div id="main-container" style="display: none;">
-        <h1>Camera An Sinh</h1>
-        <p>Làm 1 lần, An Sinh 1 đời</p>
-        <video id="videoInput" width="320" height="240" autoplay playsinline></video>
-        <canvas id="canvasOutput" width="320" height="240"></canvas>
-        <div id="counts">
-            <p>Total Grains: <span id="total-count">0</span></p>
-            <p>Lost Grains: <span id="lost-count">0</span></p>
-            <p>Divide by 4: <span id="divide-result">0</span></p>
+    <header>
+        <div class="top-left">
+            <img src="https://i.imgur.com/example-icon-eye.png" alt="Icon App Camera" width="50"> <!-- Icon mắt lồng vào -->
+            <span>App & Website về Camera (Android với chú thích đếm hạt)</span>
         </div>
-        <button onclick="captureTotal()">Capture Total</button>
-        <button onclick="captureCurrent()">Capture Current</button>
-        <button onclick="calculateDivide()">Calculate Divide</button>
-        <button onclick="toggleFullscreen()">Toggle Fullscreen</button>
-        <button onclick="logout()">Logout</button>
-        <img src="grain-logo.png" alt="Grain Logo" class="logo">
-    </div>
+        <h1>Chào mừng bạn</h1>
+    </header>
+
+    <main>
+        <section id="auth">
+            <h2>Đăng nhập</h2>
+            <form id="loginForm">
+                <input type="text" placeholder="Tên đăng nhập" required>
+                <input type="password" placeholder="Mật khẩu" required>
+                <button type="submit">Đăng nhập</button>
+            </form>
+
+            <h2>Đăng ký</h2>
+            <p>Liên hệ: 0584226789 hoặc Zalo (hình ảnh/link: <a href="file:///C:/Users/Windows/AppData/Local/ZaloPC/717202693591947566/ZaloDownloads/picture/5506168593428185523/z6928493485626_102b526ef2df8bcac16a8d36d53a5518.jpg" target="_blank">Xem hình</a> - Thay bằng link công khai nếu cần).</p>
+            <form id="registerForm">
+                <input type="text" placeholder="Tên đăng ký" required>
+                <input type="email" placeholder="Email" required>
+                <button type="submit">Đăng ký</button>
+            </form>
+        </section>
+
+        <section id="model">
+            <h2>Mô hình Thấu Kính & Độ Lệch</h2>
+            <button onclick="calculateLens()">Tính Thể Tích Thấu Kính</button>
+            <p id="result"></p>
+            <button onclick="addObject()">Thêm Vật Thể Mới (Cập Nhật)</button>
+        </section>
+
+        <section id="camera">
+            <h2>Camera Android Mô Phỏng (Với Chú Thích)</h2>
+            <video id="video" width="320" height="240" autoplay></video>
+            <canvas id="canvas" width="320" height="240"></canvas>
+            <button onclick="startCamera()">Bắt Đầu Camera</button>
+        </section>
+    </main>
+
+    <footer>Made in 2025</footer>
 
     <script src="script.js"></script>
 </body>
