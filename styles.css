@@ -4,6 +4,10 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
+    background-image: url('v_for_vendetta_face.png');
+    background-repeat: repeat;
+    background-size: 200px;
+    background-position: center;
 }
 
 header {
@@ -11,36 +15,31 @@ header {
     position: relative;
 }
 
-.top-left {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-}
-
-.top-left img {
-    margin-right: 10px;
-}
-
-h1, h2 {
-    color: #00ffcc; /* Màu xanh nhạt phù hợp với nền đen */
-}
-
-form {
-    margin-bottom: 20px;
+#login-container, #main-container {
+    text-align: center;
 }
 
 input, button {
     display: block;
-    margin: 10px 0;
+    margin: 10px auto;
     padding: 10px;
     background: #333;
     color: white;
     border: 1px solid #00ffcc;
+    width: 200px;
 }
 
-a {
+button {
+    cursor: pointer;
+}
+
+#video, #canvas {
+    border: 1px solid white;
+    margin: 10px auto;
+    display: block;
+}
+
+h1, h2 {
     color: #00ffcc;
 }
 
@@ -52,8 +51,4 @@ footer {
     text-align: center;
     background: black;
     padding: 10px;
-}
-
-#video, #canvas {
-    border: 1px solid white;
 }

@@ -3,54 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chào mừng bạn - App & Website về Camera</title>
+    <title>App & Website về Camera (Android với chú thích đếm hạt)</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="https://i.imgur.com/example-icon-eye.png"> <!-- Thay bằng link icon mắt của bạn (tôi dùng placeholder từ hình bạn đính) -->
 </head>
 <body>
-    <header>
-        <div class="top-left">
-            <img src="https://i.imgur.com/example-icon-eye.png" alt="Icon App Camera" width="50"> <!-- Icon mắt lồng vào -->
-            <span>App & Website về Camera (Android với chú thích đếm hạt)</span>
-        </div>
+    <div id="login-container" style="display: block;">
         <h1>Chào mừng bạn</h1>
-    </header>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Tên đăng nhập" required>
+            <input type="password" id="password" placeholder="Mật khẩu" required>
+            <button type="submit">Đăng nhập</button>
+        </form>
+        <p>Đăng ký | Liên hệ: 0584226789 hoặc Zalo (hình ảnh: <img src="zalo_qr.png" alt="Zalo QR Code" width="150">)</p>
+    </div>
 
-    <main>
-        <section id="auth">
-            <h2>Đăng nhập</h2>
-            <form id="loginForm">
-                <input type="text" placeholder="Tên đăng nhập" required>
-                <input type="password" placeholder="Mật khẩu" required>
-                <button type="submit">Đăng nhập</button>
-            </form>
-
-            <h2>Đăng ký</h2>
-            <p>Liên hệ: 0584226789 hoặc Zalo (hình ảnh/link: <a href="file:///C:/Users/Windows/AppData/Local/ZaloPC/717202693591947566/ZaloDownloads/picture/5506168593428185523/z6928493485626_102b526ef2df8bcac16a8d36d53a5518.jpg" target="_blank">Xem hình</a> - Thay bằng link công khai nếu cần).</p>
-            <form id="registerForm">
-                <input type="text" placeholder="Tên đăng ký" required>
-                <input type="email" placeholder="Email" required>
-                <button type="submit">Đăng ký</button>
-            </form>
-        </section>
-
-        <section id="model">
+    <div id="main-container" style="display: none;">
+        <header>
+            <h1>App & Website về Camera (Android với chú thích đếm hạt)</h1>
+        </header>
+        <section>
             <h2>Mô hình Thấu Kính & Độ Lệch</h2>
-            <button onclick="calculateLens()">Tính Thể Tích Thấu Kính</button>
-            <p id="result"></p>
-            <button onclick="addObject()">Thêm Vật Thể Mới (Cập Nhật)</button>
+            <button>Tính Thể Tích Thấu Kính</button>
+            <button>Thêm Vật Thể Mới (Cập Nhật)</button>
         </section>
-
-        <section id="camera">
+        <section>
             <h2>Camera Android Mô Phỏng (Với Chú Thích)</h2>
-            <video id="video" width="320" height="240" autoplay></video>
-            <canvas id="canvas" width="320" height="240"></canvas>
-            <button onclick="startCamera()">Bắt Đầu Camera</button>
+            <video id="video" controls></video>
+            <canvas id="canvas"></canvas>
+            <button>Bắt Đầu Camera</button>
+            <div id="counts"></div>
         </section>
-    </main>
+        <footer>Made in 2025</footer>
+    </div>
 
-    <footer>Made in 2025</footer>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginContainer = document.getElementById('login-container');
+        const mainContainer = document.getElementById('main-container');
 
-    <script src="script.js"></script>
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username === 'admin' && password === '95495K9l8J') {
+                loginContainer.style.display = 'none';
+                mainContainer.style.display = 'block';
+            } else {
+                alert('Tên đăng nhập hoặc mật khẩu không đúng!');
+            }
+        });
+    </script>
 </body>
 </html>
