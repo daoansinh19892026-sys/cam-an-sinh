@@ -1,57 +1,16 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App & Website về Camera (Android với chú thích đếm hạt)</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div id="login-container" style="display: block;">
-        <h1>Chào mừng bạn</h1>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Tên đăng nhập" required>
-            <input type="password" id="password" placeholder="Mật khẩu" required>
-            <button type="submit">Đăng nhập</button>
-        </form>
-        <p>Đăng ký | Liên hệ: 0584226789 hoặc Zalo (hình ảnh: <img src="zalo_qr.png" alt="Zalo QR Code" width="150">)</p>
+<div id="main-container" style="display: none;">
+    <h1>Camera An Sinh</h1>
+    <p>Làm 1 lần, An Sinh 1 đời</p>
+    <video id="videoInput" autoplay></video>
+    <canvas id="canvasOutput"></canvas>
+    <div id="counts">
+        Total Grains: <span id="total-count">0</span><br>
+        Lost Grains: <span id="lost-count">0</span><br>
+        Divide by 4 Remainder: <span id="divide-result">0</span>
     </div>
-
-    <div id="main-container" style="display: none;">
-        <header>
-            <h1>App & Website về Camera (Android với chú thích đếm hạt)</h1>
-        </header>
-        <section>
-            <h2>Mô hình Thấu Kính & Độ Lệch</h2>
-            <button>Tính Thể Tích Thấu Kính</button>
-            <button>Thêm Vật Thể Mới (Cập Nhật)</button>
-        </section>
-        <section>
-            <h2>Camera Android Mô Phỏng (Với Chú Thích)</h2>
-            <video id="video" controls></video>
-            <canvas id="canvas"></canvas>
-            <button>Bắt Đầu Camera</button>
-            <div id="counts"></div>
-        </section>
-        <footer>Made in 2025</footer>
-    </div>
-
-    <script>
-        const loginForm = document.getElementById('loginForm');
-        const loginContainer = document.getElementById('login-container');
-        const mainContainer = document.getElementById('main-container');
-
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            if (username === 'admin' && password === '95495K9l8J') {
-                loginContainer.style.display = 'none';
-                mainContainer.style.display = 'block';
-            } else {
-                alert('Tên đăng nhập hoặc mật khẩu không đúng!');
-            }
-        });
-    </script>
-</body>
-</html>
+    <button onclick="captureTotal()">Capture Total</button>
+    <button onclick="captureCurrent()">Capture Current</button>
+    <button onclick="calculateDivide()">Calculate Divide</button>
+    <button onclick="toggleFullscreen()">Toggle Fullscreen</button>
+    <button onclick="logout()">Logout</button>
+</div>

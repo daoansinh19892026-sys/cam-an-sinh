@@ -1,68 +1,56 @@
-/ JS cho mô hình thấu kính và độ lệch
-function calculateLens() {
-    const hc = 3; // mm
-    const a = 11.5; // mm
-    const Rs = (a**2 + hc**2) / (2 * hc); // Bán kính cầu
-    const Vcap = Math.PI * hc**2 * (Rs - hc / 3); // Thể tích một nắp
-    const Vlens = 2 * Vcap; // Thể tích thấu kính
-    const dMax = 11.5; // Độ lệch tối đa d <= R
+function detectCircles() {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Hiển thị kết quả (bao gồm nhiều vật thể nếu thêm)
-    document.getElementById('result').innerHTML = `
-        Thể tích thấu kính: ${Vlens.toFixed(2)} mm³ (≈ ${(Vlens / 1000).toFixed(3)} cm³)<br>
-        Độ lệch tâm tối đa: ${dMax} mm<br>
-        (Nguyên lý: d ≤ R cho hai mảnh tròn giống hệt).
-    `;
+    let src = cv.imread(canvas);
+    let gray = new cv.Mat();
+    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+    cv.medianBlur(gray, gray, 5);
+
+    let circles = new cv.Mat();
+    // Adjusted for smaller objects (diameter 2.5-3.5 mm, ~10-15px depending on resolution)
+    cv.HoughCircles(gray, circles, cv.HOUGH_GRADIENT, 1, 15, 50, 20, 5, 15);
+
+    let count = circles.cols;
+    let contours = new cv.MatVector();
+    let hierarchy = new cv.Mat();
+    cv.findContours(gray, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+    for (let i = 0; i < contours.size(); ++i) {
+        let area = cv.contourArea(contours.get(i));
+        if (area > 20 && area < 200) { // Adjusted for smaller objects
+            count += Math.floor(area / 60); // Approx area of one grain (π*(1.25-1.75)^2)
+        }
+    }
+
+    let color = new cv.Scalar(255, 0, 0, 255);
+    for (let i = 0; i < circles.cols; ++i) {
+        let x = circles.data32F[i * 3];
+        let y = circles.data32F[i * 3 + 1];
+        let radius = circles.data32F[i * 3 + 2];
+        let center = new cv.Point(x, y);
+        cv.circle(src, center, radius, color, 2);
+    }
+    cv.imshow('canvasOutput', src);
+
+    src.delete(); gray.delete(); circles.delete();
+    contours.delete(); hierarchy.delete();
+    return count;
 }
 
-// Cập nhật vật thể mới (thêm nhiều vật thể)
-let objects = []; // Mảng lưu nhiều vật thể
-function addObject() {
-    const newHc = prompt("Nhập chiều cao mới cho vật thể (mm):") || 3;
-    const newA = prompt("Nhập bán kính đáy mới (mm):") || 11.5;
-    objects.push({ hc: newHc, a: newA });
-    let result = 'Vật thể mới: ';
-    objects.forEach(obj => {
-        const Rs = (obj.a**2 + obj.hc**2) / (2 * obj.hc);
-        const Vlens = 2 * Math.PI * obj.hc**2 * (Rs - obj.hc / 3);
-        result += `V_lens ≈ ${Vlens.toFixed(2)} mm³<br>`;
-    });
-    document.getElementById('result').innerHTML += result;
+// Update processVideo to reflect real-time changes
+function processVideo() {
+    if (!streaming) return;
+    const count = detectCircles();
+    currentCount = count;
+    const lost = Math.max(0, totalCount - currentCount);
+    const lostDiv4 = lost % 4;
+
+    document.getElementById('total-count').textContent = totalCount;
+    document.getElementById('lost-count').textContent = lost;
+    document.getElementById('divide-result').textContent = lostDiv4;
+
+    setTimeout(processVideo, 500); // Update every 0.5 seconds
 }
-
-// JS cho camera mô phỏng (WebRTC cho web, overlay chú thích cho "Android camera")
-function startCamera() {
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            video.srcObject = stream;
-        })
-        .catch(err => console.error('Lỗi camera:', err));
-
-    // Overlay chú thích (giả lập đếm hạt)
-    setInterval(() => {
-        context.drawImage(video, 0, 0, 320, 240);
-        const totalParticles = Math.floor(Math.random() * 100); // Giả lập
-        const lostParticles = Math.floor(Math.random() * 20);
-        const lostDiv4 = (lostParticles / 4).toFixed(2);
-
-        context.fillStyle = 'white';
-        context.font = '16px Arial';
-        context.fillText(`Tổng số hạt đã đếm: ${totalParticles}`, 10, 20);
-        context.fillText(`Tổng số hạt mất: ${lostParticles}`, 10, 40);
-        context.fillText(`Số hạt mất chia 4: ${lostDiv4}`, 10, 60);
-    }, 1000); // Cập nhật mỗi giây
-}
-
-// Xử lý form (demo, không gửi thật)
-document.getElementById('loginForm').addEventListener('submit', e => {
-    e.preventDefault();
-    alert('Đăng nhập thành công!');
-});
-document.getElementById('registerForm').addEventListener('submit', e => {
-    e.preventDefault();
-    alert('Đăng ký thành công! Liên hệ 0584226789 hoặc Zalo.');
-});
